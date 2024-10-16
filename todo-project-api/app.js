@@ -1,7 +1,12 @@
-const express=require('express')
-const mongoose=require('mongoose')
-const body_parser=require('body-parser')
-const dotenv=require('dotenv')
+// const express=require('express')
+// const mongoose=require('mongoose')
+// const body_parser=require('body-parser')
+// const dotenv=require('dotenv')
+
+import express from 'express'
+import mongoose from 'mongoose'
+import body_parser from 'body-parser'
+import dotenv from 'dotenv'
 dotenv.config()
 
 const app=express()
@@ -13,8 +18,7 @@ mongoose.connect(process.env.MONGO_URL)
 .then(()=>{console.log('MongoDB is connected');
 })
 .catch((e)=>{
-    console.log('Error in connecting database',e);
-    res.send(e)    
+    console.log('Error in connecting database',e);  
 })
 
 const todoSchema=new mongoose.Schema({
@@ -44,7 +48,10 @@ app.get('/todos',async(req,res)=>{
 
 //getting todo based on id
 app.get('/todos/:id',async(req,res)=>{
-    const todo=await Todo.find({id:_id});
+    const todo=await Todo.findById(req.params.id);
+    if(!todo){
+        return res.status(404).send({message:'Todo not found.'})
+    }
     res.send(todo)
 })
 
@@ -70,3 +77,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+export default app
